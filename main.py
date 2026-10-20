@@ -1,8 +1,10 @@
 import pygame
+import random
 from car import Car
 from road import Road
 from sensor import Sensor
 from network import Network, LEFT, SLIGHT_LEFT, STRAIGHT, SLIGHT_RIGHT, RIGHT
+from checkpoints import Checkpoints
 
 pygame.init()
 
@@ -13,30 +15,48 @@ pygame.display.set_caption("Lets Race")
 clock = pygame.time.Clock()
 
 road = Road()
+checkpoint = Checkpoints()
 
-POPULATION_SIZE = 10 
+
+POPULATION_SIZE = 100
 MAX_FRAMES = 1800
 
-cars = []
-for i in range(POPULATION_SIZE):
-    car = Car()
-    sensor = Sensor(car)
-    network = Network()
+def create_population(parent_networks=None):
+    cars = []
 
-    cars.append({
-        "car": car,
-        "sensor": sensor,
-        "network": network,
-        "crashed": False,
-        "distance_travelled": 0,
-        "fitness": 0,
-        "frames_survived": 0
-    })
+    for i in range(POPULATION_SIZE):
+        if parent_networks is None:
+            network = Network()
 
-crashed = False
+        elif i < 2:
+            network = parent_networks[i]
+
+        else:
+            parent_a = random.choice(parent_networks)
+            parent_b = random.choice(parent_networks)
+            network = parent_a.breed(parent_b)
+
+        car = Car()
+        sensor = Sensor(car)
+
+        cars.append({
+            "car": car,
+            "sensor": sensor,
+            "network": network,
+            "crashed": False,
+            "distance_travelled": 0,
+            "fitness": 0,
+            "frames_survived": 0
+        })
+
+    return cars
+
+
+cars = create_population()
+generation = 1
 running = True
-fitness = 0
-frames_survived = 0
+
+
 
 
 while running:
@@ -126,6 +146,7 @@ while running:
         running = False
 
     road.draw(screen)
+    checkpoint.draw(screen)
 
     for driver in cars:
         driver["car"].draw(screen)

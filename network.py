@@ -93,15 +93,28 @@ class Network:
 
     def crossbreed():
         pass
+
+    def breed(self, other, mutation_rate=0.05, mutation_strength=0.2):
+        child = Network()
+
+        for child_layer, parent_a_layer, parent_b_layer in [
+            (child.weight1, self.weight1, other.weight1),
+            (child.weight2, self.weight2, other.weight2),
+            (child.weight3, self.weight3, other.weight3),
+        ]:
+            for i in range(len(child_layer)):
+                for j in range(len(child_layer[i])):
+                    if random.random() < 0.5:
+                        weight = parent_a_layer[i][j]
+                    else:
+                        weight = parent_b_layer[i][j]
+
+                    if random.random() < mutation_rate:
+                        weight += random.uniform(
+                            -mutation_strength,
+                            mutation_strength
+                        )
+                    child_layer[i][j] = weight
+
+        return child
      
-if __name__ == "__main__":
-    network = Network()
-
-    test_inputs = [0.21, 0.25, 0.36, 0.67, 1.0, 1.0, 0.87]
-
-    outputs = network.feed_forward(test_inputs)
-    action = network.choose_game_input(outputs)
-
-    print("Outputs:", outputs)
-    print("Chosen action:", action)
-
