@@ -1,7 +1,8 @@
 import pygame
 from car import Car
 from road import Road
-
+from sensor import Sensor
+from network import Network
 
 pygame.init()
 
@@ -14,6 +15,8 @@ clock = pygame.time.Clock()
 
 car = Car()
 road = Road()
+sensor = Sensor(car)
+network = Network()
 
 running = True
 
@@ -24,16 +27,17 @@ while running:
         car.accelerate()
 
     if keys[pygame.K_a]:
-        car.steer(-1)
+        car.steer(-0.8)
 
     if keys[pygame.K_d]:
-        car.steer(1)
+        car.steer(0.8)
 
     if keys[pygame.K_s]:
         car.reverse()
 
     car.update_position()
-
+    sensor.update(road)
+    print(sensor.readings)
 
     if not road.is_on_road(car.x, car.y):
         print("OFF ROAD")
@@ -44,8 +48,9 @@ while running:
 
 
     road.draw(screen)
-
     car.draw(screen)
+    sensor.draw(screen)
+
     pygame.display.flip()
     clock.tick(60)
 
