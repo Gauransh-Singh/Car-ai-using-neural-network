@@ -83,3 +83,6 @@ class Car:
         )
 
         screen.blit(rotated_image, rotated_rect)
+
+    def stop(self):
+        self.speed = 0
