@@ -13,6 +13,7 @@ WIDTH,HEIGHT = 1080, 720
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Lets Race")
 clock = pygame.time.Clock()
+font = pygame.font.SysFont(None, 30)
 
 road = Road()
 checkpoint = Checkpoints()
@@ -118,14 +119,16 @@ while running:
             print(
                 f"Car finished | "
                 f"Frames: {driver['frames_survived']} | "
-                f"Distance: {driver['distance_travelled']:.1f}"
+                f"Distance: {driver['distance_travelled']:.1f} |"
                 f"Fitness: {driver['fitness']:.1f}"
             )
 
-        if driver["frames_survived"] >= MAX_FRAMES:
+        elif driver["frames_survived"] >= MAX_FRAMES:
             driver["crashed"] = True
             car.stop()
-            print(f"Car timed out | Fitness: {driver['fitness']}")
+            print(f"Car timed out | " 
+                  f"Fitness: {driver['fitness']:.1f}"
+                  )
 
     if all(driver["crashed"] for driver in cars):
         ranked_cars = sorted(
@@ -134,16 +137,24 @@ while running:
             reverse= True
         )
 
-        print("Generation finished!")
+        print("Generation {generation} finished!")
 
-        for rank, driver in enumerate(ranked_cars[:2], start=1):
+        for rank, driver in enumerate(ranked_cars[:10], start=1):
             print(
             f"Rank {rank} | "
             f"Fitness: {driver['fitness']:.1f} | "
             f"Distance: {driver['distance_travelled']:.1f}" 
             )
 
-        running = False
+        breeding_pool = [
+            driver["network"]
+            for driver in ranked_cars[:10]
+        ]
+
+        cars = create_population(breeding_pool)
+        generation += 1
+
+        print(f"Started Generation {generation}!")
 
     road.draw(screen)
     checkpoint.draw(screen)
@@ -154,6 +165,17 @@ while running:
             driver["sensor"].draw(screen)
 
     pygame.display.flip()
+    active_cars = sum(
+        not driver["crashed"] for driver in cars
+    )
+
+    status = font.render(
+        f"Generation: {generation} | Active cars: {active_cars}",
+        True,
+        (255, 255, 255)
+    )
+
+    screen.blit(status, (20, 20))
     clock.tick(60)
 
 pygame.quit()

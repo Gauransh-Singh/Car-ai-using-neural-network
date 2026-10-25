@@ -18,9 +18,18 @@ class Network:
         self.weight2 = []
         self.weight3 = []
 
-        self.bias1 = []
-        self.bias2 = []
-        self.bias3 = []
+        self.bias1 = [
+            random.uniform(-1, 1)
+            for _ in range(self.hidden1_size)
+        ]
+        self.bias2 = [
+            random.uniform(-1, 1)
+            for _ in range(self.hidden2_size)
+        ]
+        self.bias3 = [
+            random.uniform(-1, 1)
+            for _ in range(self.output_size)
+        ]
 
         self.weight1 = [
             [random.uniform(-1,1) for _ in range(self.input_size)]
@@ -47,7 +56,9 @@ class Network:
             for i in range(self.input_size):
                 total += inputs[i] * neuron_wieghts[i]
 
+            total += self.bias1[len(hidden1)]
             total = self.activation_ReLU(total)
+            
             hidden1.append(total)
 
         hidden2 = []
@@ -57,6 +68,7 @@ class Network:
             for i in range(self.hidden1_size):
                 total += hidden1[i] * neuron_wieghts[i]
 
+            total += self.bias2[len(hidden2)]
             total = self.activation_ReLU(total)
             hidden2.append(total)
 
@@ -67,6 +79,7 @@ class Network:
             for i in range(self.hidden2_size):
                 total += hidden2[i] * neuron_wieghts[i]
 
+            total += self.bias3[len(output)]
             total = self.activation_ReLU(total)
             output.append(total)
             
