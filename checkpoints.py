@@ -26,6 +26,21 @@ class Checkpoints:
             Checkpoint((900, 30), (900, 125))
         ]
 
+    def check_checkpoint(self, car_x, car_y, checkpoint_index):
+        checkpoint = self.points[checkpoint_index]
+
+        x1, y1 = checkpoint.start
+        x2, y2 = checkpoint.end
+
+        mid_x = (x1 + x2)/2
+        mid_y = (y1 + y2)/2
+
+        distance = (
+            (car_x - mid_x)** 2 +
+            (car_y - mid_y)** 2
+        )** 0.5
+        return distance < 25 
+
     def draw(self, screen):
         for checkpoint in self.points:
             checkpoint.draw(screen)

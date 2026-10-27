@@ -104,8 +104,6 @@ class Network:
         else:
             return RIGHT
 
-    def crossbreed():
-        pass
 
     def breed(self, other, mutation_rate=0.05, mutation_strength=0.2):
         child = Network()
@@ -129,5 +127,23 @@ class Network:
                         )
                     child_layer[i][j] = weight
 
+        for child_biases, parent_a_biases, parent_b_biases in [
+            (child.bias1, self.bias1, other.bias1),
+            (child.bias2, self.bias2, other.bias2),
+            (child.bias3, self.bias3, other.bias3),
+        ]:
+            for i in range ( len(child_biases)):
+                if random.random() < 0.5:
+                    value = parent_a_biases[i]
+                else:
+                    value = parent_b_biases[i]
+
+                if random.random() < mutation_rate:
+                    value += random.uniform(
+                        -mutation_strength,
+                        mutation_strength
+                    )
+
+                child_biases[i] = value
+                
         return child
-     

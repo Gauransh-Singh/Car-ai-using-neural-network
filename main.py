@@ -47,7 +47,9 @@ def create_population(parent_networks=None):
             "crashed": False,
             "distance_travelled": 0,
             "fitness": 0,
-            "frames_survived": 0
+            "frames_survived": 0,
+            "next_checkpoint": 0,
+            "checkpoints_passed": 0,        
         })
 
     return cars
@@ -56,9 +58,6 @@ def create_population(parent_networks=None):
 cars = create_population()
 generation = 1
 running = True
-
-
-
 
 while running:
     for event in pygame.event.get():
@@ -100,6 +99,17 @@ while running:
 
         car.update_position()
 
+        checkpoint_index = driver["next_checkpoint"]
+
+        if checkpoint_index < len(checkpoint.points):
+            if checkpoint.check_checkpoint(
+                car.x,
+                car.y,
+                checkpoint_index
+            ):
+                driver["checkpoints_passed"] += 1
+                driver["next_checkpoint"] += 1
+
         distance_moved = (
             (car.x - previous_x) ** 2 +
             (car.y - previous_y) ** 2
@@ -110,7 +120,10 @@ while running:
         )
 
         driver["frames_survived"] += 1
-        driver["fitness"] = driver["distance_travelled"]
+        driver["fitness"] = (
+            driver["checkpoints_passed"] * 1000
+            + driver["distance_travelled"]
+        )
 
         if not road.is_on_road(car.x, car.y):
             driver["crashed"] = True
@@ -145,6 +158,18 @@ while running:
             f"Fitness: {driver['fitness']:.1f} | "
             f"Distance: {driver['distance_travelled']:.1f}" 
             )
+
+        best_fitness = ranked_cars[0]["fitness"]
+
+        average_fitness = sum(
+            driver["fitness"] for driver in ranked_cars
+        ) / len(ranked_cars)
+
+        print(
+            f"Generation {generation} | "
+            f"Best: {best_fitness:.1f} | "
+            f"Average: {average_fitness:.1f}"
+        )
 
         breeding_pool = [
             driver["network"]
