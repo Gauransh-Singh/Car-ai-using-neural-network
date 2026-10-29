@@ -185,7 +185,7 @@ This project provides practical experience with:
 
 **Gauransh Singh**
 
-GitHub: [Your GitHub Profile](https://github.com/Gauransh-Singh)
+GitHub: [My Profile](https://github.com/Gauransh-Singh)
 
 ---
 
